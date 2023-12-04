@@ -5,7 +5,7 @@ module isadigit
         character :: char
         logical :: digit_or_not
         if (char=="1".or.char=="2".or.char=="3".or.char=="4".or.char=="5".or.char=="6".or.char=="7".or.char=="8".or.&
-            char=="9") then
+            char=="9".or.char=="0") then
             digit_or_not = .TRUE.
         else
             digit_or_not = .FALSE.
