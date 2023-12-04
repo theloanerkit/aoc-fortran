@@ -47,7 +47,17 @@ program day02
         integer :: answer_two
         integer :: num_lines
         character(len=200) :: lines(num_lines)
+        integer :: i
+        integer :: draws
+        integer :: answer
+        integer :: start_index
         answer_two = 0
+        do i=1,num_lines
+            draws = get_draws(lines(i))+1
+            start_index = get_start_index(lines(i))
+            answer = build_game(lines(i),draws,start_index,2)
+            answer_two = answer_two + answer
+        end do
     end function part_two
 
     function game_one(line) result (gameid)
@@ -55,17 +65,17 @@ program day02
         character(len=200) :: line
         integer :: draws
         integer :: start_index
-        logical :: valid
         character :: char
         integer :: place
         integer :: digit
         integer :: i
+        integer :: answer
         gameid=0
         place = 0
         draws = get_draws(line) + 1
         start_index = get_start_index(line)
-        valid = build_game(line,draws,start_index)
-        if (valid) then
+        answer = build_game(line,draws,start_index,1)
+        if (answer == 1) then
             do i=start_index,1,-1
                 char = line(i:i)
                 if (is_char_a_digit(char)) then
@@ -81,41 +91,28 @@ program day02
         logical :: valid
         integer :: draws
         character(len=10) :: game(draws)
-        character :: char
-        integer :: i,j
+        !character :: char
+        integer :: i!,j
         integer :: red = 12
         integer :: green = 13
         integer :: blue = 14
-        integer :: amount
-        integer :: temp =0
-        character :: colour = " "
+        integer :: amount(draws)
+        character :: colour(draws)
         integer :: valid_draws
-        amount = 0
         valid_draws = 0
+        amount = get_amount(game,draws)
+        colour = get_char(game,draws)
         do i=1,draws
-            amount = 0
-            colour=" "
-            do j=1,10
-                char = game(i)(j:j)
-                if (is_char_a_digit(char)) then
-                    read(char,'(i1)') temp
-                    amount = amount * 10
-                    amount = amount + temp
-                    temp = 0
-                else if (.not.is_char_a_digit(char).and.char.ne." ".and.colour==" ") then
-                    colour = char
-                end if
-            end do
-            if (colour=="r") then
-                if (amount.le.red) then
+            if (colour(i)=="r") then
+                if (amount(i).le.red) then
                     valid_draws = valid_draws + 1
                 end if
-            else if (colour=="g") then
-                if (amount.le.green) then
+            else if (colour(i)=="g") then
+                if (amount(i).le.green) then
                     valid_draws = valid_draws + 1
                 end if
-            else if (colour=="b") then
-                if (amount.le.blue) then
+            else if (colour(i)=="b") then
+                if (amount(i).le.blue) then
                     valid_draws = valid_draws + 1
                 end if 
             end if
@@ -127,7 +124,49 @@ program day02
         end if
     end function valid_game
 
-    function build_game(line,draws,start_index) result (valid)
+    function get_amount(game, draws) result (amount)
+        integer :: draws
+        character(len=10) :: game(draws)
+        integer :: amount(draws)
+        integer :: i,j
+        character :: char
+        integer :: digit
+        amount = 0
+        do i=1,draws
+            do j=1,10
+                char = game(i)(j:j)
+                if (is_char_a_digit(char)) then
+                    read(char,'(i1)') digit
+                    amount(i) = amount(i) * 10
+                    amount(i) = amount(i) + digit
+                    digit = 0
+                end if
+            end do
+        end do
+    end function get_amount
+
+    function get_char(game, draws) result (chars)
+        integer :: draws
+        character(len=10) :: game(draws)
+        character :: chars(draws)
+        integer :: i,j
+        character :: char
+        character :: colour
+        char = ""
+        colour = " "
+        do i=1,draws
+            do j=1,10
+                char = game(i)(j:j)
+                if (.not.is_char_a_digit(char).and.char.ne." ".and.colour==" ") then
+                    colour = char
+                end if
+            end do
+            chars(i) = colour
+            colour = " "
+        end do
+    end function get_char
+
+    function build_game(line,draws,start_index,part) result (answer)
         character(len=200) :: line
         integer :: draws
         integer :: start_index
@@ -138,6 +177,8 @@ program day02
         integer :: stringidx
         integer :: arr_idx
         logical :: valid
+        integer :: part
+        integer :: answer
         stringidx=1
         arr_idx=1
         temp=""
@@ -165,8 +206,51 @@ program day02
             end if
         end do
         game(arr_idx) = temp
-        valid = valid_game(game, draws)
+        if (part==1) then
+            valid = valid_game(game, draws)
+            if (valid) then
+                answer = 1
+            else
+                answer = 0
+            end if
+        else if (part==2) then
+            answer = how_many_cubes(game, draws)
+        end if
     end function build_game
+
+    function how_many_cubes(game, draws) result (cubes)
+        integer :: cubes
+        integer :: draws
+        character(len=10) :: game(draws)
+        integer :: i
+        integer :: red
+        integer :: green
+        integer :: blue
+        integer :: amount(draws)
+        character :: colour(draws)
+        red = 0 
+        green = 0
+        blue = 0
+        amount = get_amount(game,draws)
+        colour = get_char(game,draws)
+        do i=1,draws
+            print*,colour(i),amount(i)
+            if (colour(i)=="r") then
+                if (amount(i)>red) then
+                    red = amount(i)
+                end if
+            else if (colour(i)=="g") then
+                if (amount(i)>green) then
+                    green = amount(i)
+                end if
+            else if (colour(i)=="b") then
+                if (amount(i)>blue) then
+                    blue = amount(i)
+                end if
+            end if
+        end do
+        cubes = red * blue * green
+    end function
 
     function get_start_index(line) result (index)
         integer :: index
