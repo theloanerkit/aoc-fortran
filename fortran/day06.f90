@@ -1,5 +1,5 @@
 program day06
-    use readfile, only : readlines
+    use readfile, only : readlines,remove_whitespace
     use isadigit, only : how_many_numbers, get_numbers
     implicit none
     integer :: num_lines
@@ -18,6 +18,7 @@ program day06
         lines = readlines(num_lines,40)
 
         answer_one=part_one(lines,num_lines)
+        answer_two=part_two(lines,num_lines)
 
         print*,"part one: "
         print*,answer_one
@@ -27,12 +28,13 @@ program day06
     end subroutine solve
 
     function how_long_to_button(time,distance) result (options)
+        integer, parameter :: k = selected_int_kind(16)
         integer :: options
-        integer :: time
-        integer :: distance
-        integer :: bt,mt,d
-        integer :: min_button
-        real :: temp
+        integer (kind=k) :: time
+        integer (kind=k):: distance
+        integer (kind=k):: bt,mt,d
+        integer (kind=k):: min_button
+        real (kind=k):: temp
         options = 0
         temp = (time*time)-(4*distance)
         min_button = floor((time-sqrt(temp))/2)
@@ -51,22 +53,21 @@ program day06
         integer :: num_lines
         integer :: answer_one
         character(len=40) :: lines(num_lines)
-        integer :: i
         integer :: nums_count
 
         nums_count = how_many_numbers(lines(1),40)
 
         answer_one = run_part_one(lines,num_lines,nums_count)
-        
     end function part_one
 
     function run_part_one(lines,num_lines,nums_count) result (answer_one)
+        integer, parameter :: k = selected_int_kind(16)
         integer :: num_lines
         integer :: nums_count
         integer :: answer_one
         character(len=40) :: lines(num_lines)
-        integer :: times(nums_count)
-        integer :: distances(nums_count)
+        integer (kind=k):: times(nums_count)
+        integer (kind=k):: distances(nums_count)
         integer :: options(nums_count)
         integer :: i
         times = get_numbers(lines(1),40,nums_count)
@@ -79,5 +80,20 @@ program day06
             answer_one = answer_one*options(i)
         end do
     end function run_part_one
+
+    function part_two(lines,num_lines) result (answer_two)
+        integer, parameter :: k = selected_int_kind(16)
+        integer :: num_lines
+        integer :: answer_two
+        character(len=40) :: lines(num_lines)
+        character(len=40) :: line1,line2
+        integer(kind=k) :: time(1)
+        integer(kind=k) :: distance(1)
+        line1 = remove_whitespace(lines(1),40)
+        line2 = remove_whitespace(lines(2),40)
+        time = get_numbers(line1,40,1)
+        distance = get_numbers(line2,40,1)
+        answer_two = how_long_to_button(time(1),distance(1))
+    end function part_two
 
 end program day06
