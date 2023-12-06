@@ -19,13 +19,15 @@ module readfile
         integer :: length
         character(len=length) :: line
         character(len=length) :: newline
-        integer :: i
+        integer :: i,j
         character :: char
         newline = ""
+        j = 1
         do i=1,length
             char = line(i:i)
             if (char.ne." ") then
-                newline(i:i) = char
+                newline(j:j) = char
+                j = j+1
             end if
         end do
     end function remove_whitespace
