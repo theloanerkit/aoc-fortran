@@ -14,4 +14,20 @@ module readfile
             lines(i) = line
         end do
     end function readlines
+
+    function remove_whitespace(line,length) result (newline)
+        integer :: length
+        character(len=length) :: line
+        character(len=length) :: newline
+        integer :: i
+        character :: char
+        newline = ""
+        do i=1,length
+            char = line(i:i)
+            if (char.ne." ") then
+                newline(i:i) = char
+            end if
+        end do
+    end function remove_whitespace
+
 end module readfile
