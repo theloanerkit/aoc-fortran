@@ -43,6 +43,9 @@ module isadigit
         integer :: current_num
         integer :: i
         integer :: digit
+        integer :: arr_idx
+        arr_idx = 1
+        print*,"yo"
         current_num = 0
         do i=1,length
             char = line(i:i)
@@ -51,9 +54,11 @@ module isadigit
                 read(char,'(i1)') digit
                 current_num = current_num + digit
             else if (current_num.ne.0) then
-                nums(i) = current_num
+                nums(arr_idx) = current_num
                 current_num = 0
+                arr_idx = arr_idx + 1
             end if
         end do
+        print*,nums
     end function get_numbers
 end module isadigit
