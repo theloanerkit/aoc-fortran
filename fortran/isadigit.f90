@@ -11,4 +11,49 @@ module isadigit
             digit_or_not = .FALSE.
         end if
     end function is_char_a_digit
+
+    function how_many_numbers(line,length) result (count)
+        integer :: count
+        integer :: length
+        character(len=length) :: line
+        character :: char
+        integer :: i
+        logical :: in_a_num
+        in_a_num = .FALSE.
+        count = 0
+        do i=1,length
+            char = line(i:i)
+            if (is_char_a_digit(char)) then
+                in_a_num = .TRUE.
+            else
+                if (in_a_num) then
+                    count = count + 1
+                    in_a_num = .FALSE.
+                end if
+            end if
+        end do
+    end function how_many_numbers
+
+    function get_numbers(line,length,nums_count) result (nums)
+        integer :: length
+        integer :: nums_count
+        character(len=length) :: line
+        integer :: nums(nums_count)
+        character :: char
+        integer :: current_num
+        integer :: i
+        integer :: digit
+        current_num = 0
+        do i=1,length
+            char = line(i:i)
+            if (is_char_a_digit(char)) then
+                current_num = current_num * 10
+                read(char,'(i1)') digit
+                current_num = current_num + digit
+            else if (current_num.ne.0) then
+                nums(i) = current_num
+                current_num = 0
+            end if
+        end do
+    end function get_numbers
 end module isadigit
