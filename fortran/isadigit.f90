@@ -35,17 +35,17 @@ module isadigit
     end function how_many_numbers
 
     function get_numbers(line,length,nums_count) result (nums)
+        integer, parameter :: k = selected_int_kind(16)
         integer :: length
         integer :: nums_count
         character(len=length) :: line
-        integer :: nums(nums_count)
+        integer (kind=k):: nums(nums_count)
         character :: char
-        integer :: current_num
+        integer (kind=k):: current_num
         integer :: i
         integer :: digit
         integer :: arr_idx
         arr_idx = 1
-        print*,"yo"
         current_num = 0
         do i=1,length
             char = line(i:i)
@@ -59,6 +59,5 @@ module isadigit
                 arr_idx = arr_idx + 1
             end if
         end do
-        print*,nums
     end function get_numbers
 end module isadigit
